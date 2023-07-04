@@ -134,7 +134,6 @@ public class WordleController {
         for (int i = 0; i < 5; i++) {
             answerArray.add(String.valueOf(answerString.charAt(i)));
         }
-        System.out.println(answerString);
     }
 
     // set initial grid layout at the start of the game
@@ -159,8 +158,6 @@ public class WordleController {
     // compare guess to answer
     private void compareAnswer() {
         for (int i = 0; i < 5; i++) {
-            System.out.println(guessArray);
-            System.out.println(answerArray);
             VBox vbox = (VBox) grid.getChildren().get(numGuesses * 5 + i);
             if (guessArray.get(i).equals(answerArray.get(i))) {
                 vbox.setStyle("-fx-background-color: #90ce95");
@@ -168,7 +165,6 @@ public class WordleController {
             }
             if (answerArray.contains(guessArray.get(i))) {
                 vbox.setStyle("-fx-background-color: #dfc988");
-                continue;
             }
         }
     }
