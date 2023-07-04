@@ -102,12 +102,10 @@ public class WordleController {
             }
             guessArray = new ArrayList<>(5);
             for (int i = 0; i < 5; i++) {
-                int index = i + numGuesses * 5;
                 VBox vbox = (VBox) grid.getChildren().get(numGuesses * 5 + i);
                 vbox.setStyle("-fx-background-color: #8bbbe1");
                 Label label = (Label) vbox.getChildren().get(0);
                 label.setText("?");
-                System.out.println(index);
             }
         }
     }
@@ -134,7 +132,7 @@ public class WordleController {
         int num = random.nextInt(words.size());
         answerString = words.get(num).toLowerCase();
         for (int i = 0; i < 5; i++) {
-            answerArray.add(answerString);
+            answerArray.add(String.valueOf(answerString.charAt(i)));
         }
         System.out.println(answerString);
     }
@@ -160,6 +158,18 @@ public class WordleController {
 
     // compare guess to answer
     private void compareAnswer() {
-
+        for (int i = 0; i < 5; i++) {
+            System.out.println(guessArray);
+            System.out.println(answerArray);
+            VBox vbox = (VBox) grid.getChildren().get(numGuesses * 5 + i);
+            if (guessArray.get(i).equals(answerArray.get(i))) {
+                vbox.setStyle("-fx-background-color: #90ce95");
+                continue;
+            }
+            if (answerArray.contains(guessArray.get(i))) {
+                vbox.setStyle("-fx-background-color: #dfc988");
+                continue;
+            }
+        }
     }
 }
