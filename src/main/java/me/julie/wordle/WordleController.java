@@ -70,7 +70,7 @@ public class WordleController {
             vbox.setAlignment(Pos.CENTER);
             vbox.setStyle("-fx-background-color: #8bbbe1");
             Label label = new Label();
-            label.setText("A");
+            label.setText("?");
             label.setFont(Font.font("Courier New", 30));
             vbox.getChildren().add(label);
             grid.add(vbox, i, 0);
