@@ -52,7 +52,10 @@
                      <Font name="Courier New" size="25.0" />
                   </font>
                </Label>
-               <Button fx:id="newGameButton" mnemonicParsing="false" text="New Game" />
+               <Button fx:id="newGameButton" mnemonicParsing="false" text="New Game" textFill="#506eac">
+                  <font>
+                     <Font name="Courier New Bold" size="15.0" />
+                  </font></Button>
             </children>
          </VBox>
       </children></AnchorPane>

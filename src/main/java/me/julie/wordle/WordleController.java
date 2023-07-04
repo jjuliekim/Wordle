@@ -31,6 +31,8 @@ public class WordleController {
     @FXML
     private Button newGameButton;
     private static WordleController controller;
+    private ArrayList<String> dictionary = new ArrayList<>();
+    private Scanner scanner;
 
     public static WordleController getInstance() {
         return controller;
@@ -45,6 +47,12 @@ public class WordleController {
         newGameButton.setFocusTraversable(false);
         newGameButton.setOnAction(e -> handleNewGame());
         mainVbox.setStyle("-fx-background-color: #5d819d");
+        scanner = new Scanner(Objects.requireNonNull(WordleController.class.getClassLoader()
+                .getResourceAsStream("dictionary.txt")));
+        dictionary = new ArrayList<>();
+        while (scanner.hasNext()) {
+            dictionary.add(scanner.nextLine());
+        }
         run();
     }
 
@@ -90,6 +98,22 @@ public class WordleController {
     // player's word guess
     private void handleEnterKey() {
         if (guessArray.size() == 5) {
+            StringBuilder guessString = new StringBuilder();
+            for (String letter : guessArray) {
+                guessString.append(letter);
+            }
+            if (!dictionary.contains(guessString.toString())) {
+                endGameLabel.setText("Invalid word");
+                guessArray = new ArrayList<>(5);
+                for (int i = 0; i < 5; i++) {
+                    VBox vbox = (VBox) grid.getChildren().get(numGuesses * 5 + i);
+                    vbox.setStyle("-fx-background-color: #8bbbe1");
+                    Label label = (Label) vbox.getChildren().get(0);
+                    label.setText("?");
+                }
+                return;
+            }
+            endGameLabel.setText("");
             compareAnswer();
             numGuesses++;
             if (guessArray.equals(answerArray)) {
@@ -99,6 +123,7 @@ public class WordleController {
             if (numGuesses == 6) {
                 endGameLabel.setText("You lose!");
                 answerLabel.setText("The answer was " + answerString);
+                return;
             }
             guessArray = new ArrayList<>(5);
             for (int i = 0; i < 5; i++) {
@@ -122,11 +147,11 @@ public class WordleController {
 
     // get random word from words.txt
     private void generateAnswer() {
-        final Scanner fileScanner = new Scanner(
-                Objects.requireNonNull(WordleController.class.getClassLoader().getResourceAsStream("words.txt")));
+        scanner = new Scanner(Objects.requireNonNull(WordleController.class.getClassLoader()
+                        .getResourceAsStream("words.txt")));
         ArrayList<String> words = new ArrayList<>();
-        while (fileScanner.hasNext()) {
-            words.add(fileScanner.nextLine());
+        while (scanner.hasNext()) {
+            words.add(scanner.nextLine());
         }
         Random random = new Random();
         int num = random.nextInt(words.size());
