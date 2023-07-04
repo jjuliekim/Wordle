@@ -1,16 +1,13 @@
 package me.julie.wordle;
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.util.ArrayList;
@@ -31,7 +28,6 @@ public class WordleController {
     private VBox mainVbox;
     @FXML
     private GridPane grid;
-    private Label[][] labels = new Label[6][5];
     @FXML
     private Button newGameButton;
     private static WordleController controller;
@@ -100,10 +96,11 @@ public class WordleController {
                 endGameLabel.setText("You win!");
                 return;
             }
-            if (numGuesses == 5) {
+            if (numGuesses == 6) {
                 endGameLabel.setText("You lose!");
                 answerLabel.setText("The answer was " + answerString);
             }
+            guessArray = new ArrayList<>(5);
             for (int i = 0; i < 5; i++) {
                 int index = i + numGuesses * 5;
                 VBox vbox = (VBox) grid.getChildren().get(numGuesses * 5 + i);
