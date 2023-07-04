@@ -1,13 +1,17 @@
 package me.julie.wordle;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -16,8 +20,9 @@ import java.util.Scanner;
 
 public class WordleController {
     private String answerString;
-    private char[] answerArray = new char[5];
-    private char[] guessArray = new char[5];
+    private final ArrayList<String> answerArray = new ArrayList<>(5);
+    private final ArrayList<String> guessArray = new ArrayList<>(5);
+    private int numGuesses;
     @FXML
     private Label endGameLabel;
     @FXML
@@ -26,28 +31,99 @@ public class WordleController {
     private VBox mainVbox;
     @FXML
     private GridPane grid;
+    private Label[][] labels = new Label[6][5];
     @FXML
     private Button newGameButton;
+    private static WordleController controller;
+
+    public static WordleController getInstance() {
+        return controller;
+    }
+
+    public WordleController() {
+        controller = this;
+    }
 
     @FXML
     public void initialize() {
+        newGameButton.setFocusTraversable(false);
         newGameButton.setOnAction(e -> handleNewGame());
         mainVbox.setStyle("-fx-background-color: #5d819d");
         run();
     }
 
     public void run() {
+        endGameLabel.setText("");
+        answerLabel.setText("");
+        numGuesses = 0;
         generateAnswer();
         setGrid();
     }
 
     private void handleNewGame() {
-        endGameLabel.setText("");
-        answerLabel.setText("");
         grid.getChildren().clear();
         run();
     }
 
+    public void handleKeys(KeyEvent key) {
+        if (key.getCode().isLetterKey()) {
+            handleLetterKey(key);
+        }
+        if (key.getCode() == KeyCode.ENTER) {
+            handleEnterKey();
+        }
+        if (key.getCode() == KeyCode.BACK_SPACE) {
+            handleBackspaceKey();
+        }
+    }
+
+    // letter input
+    private void handleLetterKey(KeyEvent key) {
+        String letter = key.getText();
+        if (guessArray.size() < 5) {
+            guessArray.add(letter);
+            VBox vbox = (VBox) grid.getChildren().get(guessArray.size() - 1 + numGuesses * 5);
+            Label label = (Label) vbox.getChildren().get(0);
+            label.setText(letter);
+        }
+
+    }
+
+    // player's word guess
+    private void handleEnterKey() {
+        if (guessArray.size() == 5) {
+            compareAnswer();
+            numGuesses++;
+            if (guessArray.equals(answerArray)) {
+                endGameLabel.setText("You win!");
+                return;
+            }
+            if (numGuesses == 5) {
+                endGameLabel.setText("You lose!");
+                answerLabel.setText("The answer was " + answerString);
+            }
+            for (int i = 0; i < 5; i++) {
+                int index = i + numGuesses * 5;
+                VBox vbox = (VBox) grid.getChildren().get(numGuesses * 5 + i);
+                vbox.setStyle("-fx-background-color: #8bbbe1");
+                Label label = (Label) vbox.getChildren().get(0);
+                label.setText("?");
+                System.out.println(index);
+            }
+        }
+    }
+
+    // delete last letter of guess
+    private void handleBackspaceKey() {
+        if (guessArray.size() > 0) {
+            guessArray.remove(guessArray.size() - 1);
+            VBox vbox = (VBox) grid.getChildren().get(guessArray.size() + numGuesses * 5);
+            Label label = (Label) vbox.getChildren().get(0);
+            label.setText("?");
+        }
+    }
+
+    // get random word from words.txt
     private void generateAnswer() {
         final Scanner fileScanner = new Scanner(
                 Objects.requireNonNull(WordleController.class.getClassLoader().getResourceAsStream("words.txt")));
@@ -59,31 +135,32 @@ public class WordleController {
         int num = random.nextInt(words.size());
         answerString = words.get(num).toLowerCase();
         for (int i = 0; i < 5; i++) {
-            answerArray[i] = answerString.charAt(i);
+            answerArray.add(answerString);
         }
         System.out.println(answerString);
     }
 
+    // set initial grid layout at the start of the game
     private void setGrid() {
-        for (int i = 0; i < 5; i++) {
-            VBox vbox = new VBox();
-            vbox.setAlignment(Pos.CENTER);
-            vbox.setStyle("-fx-background-color: #8bbbe1");
-            Label label = new Label();
-            label.setText("?");
-            label.setFont(Font.font("Courier New", 30));
-            vbox.getChildren().add(label);
-            grid.add(vbox, i, 0);
-        }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 1; j < 6; j++) {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 5; j++) {
                 VBox vbox = new VBox();
                 vbox.setAlignment(Pos.CENTER);
                 vbox.setStyle("-fx-background-color: #254b68");
                 Label label = new Label();
+                if (i == 0) {
+                    vbox.setStyle("-fx-background-color: #8bbbe1");
+                    label.setText("?");
+                }
+                label.setFont(Font.font("Courier New", 30));
                 vbox.getChildren().add(label);
-                grid.add(vbox, i, j);
+                grid.add(vbox, j, i);
             }
         }
+    }
+
+    // compare guess to answer
+    private void compareAnswer() {
+
     }
 }
