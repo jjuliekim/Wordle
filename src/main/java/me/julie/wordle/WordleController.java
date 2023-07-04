@@ -20,8 +20,8 @@ import java.util.Scanner;
 
 public class WordleController {
     private String answerString;
-    private final ArrayList<String> answerArray = new ArrayList<>(5);
-    private final ArrayList<String> guessArray = new ArrayList<>(5);
+    private ArrayList<String> answerArray = new ArrayList<>(5);
+    private ArrayList<String> guessArray = new ArrayList<>(5);
     private int numGuesses;
     @FXML
     private Label endGameLabel;
@@ -53,8 +53,6 @@ public class WordleController {
     }
 
     public void run() {
-        endGameLabel.setText("");
-        answerLabel.setText("");
         numGuesses = 0;
         generateAnswer();
         setGrid();
@@ -62,6 +60,10 @@ public class WordleController {
 
     private void handleNewGame() {
         grid.getChildren().clear();
+        answerArray = new ArrayList<>(5);
+        guessArray = new ArrayList<>(5);
+        endGameLabel.setText("");
+        answerLabel.setText("");
         run();
     }
 
